@@ -1,6 +1,6 @@
 echo "Waiting for Kafka to come online..."
 
-cub kafka-ready -b kafka:9092 1 20
+# cub kafka-ready -b kafka:9092 1 20
 
 # create the tweet topic
 kafka-topics \
@@ -19,4 +19,4 @@ kafka-topics \
   --partitions 4 \
   --create
 
-sleeep infinity
+sleep infinity
