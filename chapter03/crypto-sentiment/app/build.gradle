@@ -20,6 +20,9 @@ dependencies {
     // Add kafka streams dependency library
     implementation 'org.apache.kafka:kafka-streams:4.0.0'
 
+    // required for JSON serializer
+    implementation 'com.google.code.gson:gson:2.10.1'
+
     // Use JUnit Jupiter for testing.
     testImplementation libs.junit.jupiter
 
