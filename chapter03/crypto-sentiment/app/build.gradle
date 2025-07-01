@@ -23,6 +23,15 @@ dependencies {
     // required for JSON serializer
     implementation 'com.google.code.gson:gson:2.10.1'
 
+    // required for Lombok Project
+    compileOnly 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.38'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
+
+
+
     // Use JUnit Jupiter for testing.
     testImplementation libs.junit.jupiter
 

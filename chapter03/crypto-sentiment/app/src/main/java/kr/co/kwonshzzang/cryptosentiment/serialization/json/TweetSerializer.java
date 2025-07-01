@@ -1,21 +1,17 @@
 package kr.co.kwonshzzang.cryptosentiment.serialization.json;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import kr.co.kwonshzzang.cryptosentiment.serialization.Tweet;
-import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serializer;
 
 import java.nio.charset.StandardCharsets;
 
-public class TweetSerializer implements Deserializer<Tweet> {
-    private Gson gson = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-            .create();
+public class TweetSerializer implements Serializer<Tweet> {
+    private final Gson gson = new Gson();
 
     @Override
-    public Tweet deserialize(String topic, byte[] bytes) {
-        if (bytes == null) return null;
-        return gson.fromJson(new String(bytes, StandardCharsets.UTF_8), Tweet.class);
+    public byte[] serialize(String topic, Tweet tweet) {
+        if(tweet == null) return null;
+        return gson.toJson(tweet).getBytes(StandardCharsets.UTF_8);
     }
 }
