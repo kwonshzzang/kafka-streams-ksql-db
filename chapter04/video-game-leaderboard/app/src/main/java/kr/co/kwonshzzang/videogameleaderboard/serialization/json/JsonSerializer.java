@@ -9,10 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class JsonSerializer<T> implements Serializer<T> {
-    private final Gson gson  = new GsonBuilder()
-            . setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+    private final Gson gson = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
-
     /** Default constructor needed by kafka */
     public JsonSerializer() {}
 

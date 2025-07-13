@@ -3,9 +3,32 @@
  */
 package kr.co.kwonshzzang.videogameleaderboard;
 
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.Topology;
+
+import java.util.Properties;
+
 public class App {
 
     public static void main(String[] args) {
+        Topology topology = LeaderboardTopology.build();
+
+
+        // set the required properties for running kafka streams
+        Properties props = new Properties();
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "dev");
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
+
+
+        // build the topology
+        KafkaStreams streams = new KafkaStreams(topology, props);
+        // close Kafka Streams when the JVM shuts down(e.g. SIGTERM)
+        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+        // start streaming!
+        System.out.println("Starting Videogame Leaderboard");
+        streams.start();
 
     }
 }

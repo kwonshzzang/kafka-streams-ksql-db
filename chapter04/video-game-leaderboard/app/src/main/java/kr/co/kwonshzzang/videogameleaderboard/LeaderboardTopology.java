@@ -3,14 +3,13 @@ package kr.co.kwonshzzang.videogameleaderboard;
 import kr.co.kwonshzzang.videogameleaderboard.model.Player;
 import kr.co.kwonshzzang.videogameleaderboard.model.Product;
 import kr.co.kwonshzzang.videogameleaderboard.model.ScoreEvent;
+import kr.co.kwonshzzang.videogameleaderboard.model.join.Enriched;
+import kr.co.kwonshzzang.videogameleaderboard.model.join.ScoreWithPlayer;
 import kr.co.kwonshzzang.videogameleaderboard.serialization.json.JsonSerdes;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.GlobalKTable;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.*;
 
 public class LeaderboardTopology {
 
@@ -18,27 +17,48 @@ public class LeaderboardTopology {
         // the builder is used to construct the topology
         StreamsBuilder builder = new StreamsBuilder();
 
-        // register the score events stream
-        KStream<String, ScoreEvent> scoreEvent =
+        // source: register the score events stream
+        KStream<String, ScoreEvent> scoreEventKStream =
                 builder.stream(
                         "score-events",
-                        Consumed.with(Serdes.ByteArray(), JsonSerdes.ScoreEvent()))
-                        // now marked for re-partitioning
-                        .selectKey((k, v) -> v.getPlayerId().toString());
+                        Consumed.with(Serdes.String(), JsonSerdes.ScoreEvent()))
+                        // Key가 없음. 리파티셔닝이 필요함
+                        .selectKey((key, value) ->String.valueOf(value.getPlayerId()));
 
-        // create the sharded players table
-        KTable<String, Player> players =
+        // source: create the sharded players table
+        KTable<String, Player> playerKTable =
                 builder.table(
                     "players",
                     Consumed.with(Serdes.String(), JsonSerdes.Player()));
 
-
-        // create the global product table
-        GlobalKTable<String, Product> products =
+        // source: create the global product table
+        GlobalKTable<String, Product> productGlobalKTable =
                 builder.globalTable(
                         "products",
                         Consumed.with(Serdes.String(), JsonSerdes.Product())
                 );
+
+
+        scoreEventKStream.print(Printed.toSysOut());
+
+        // Joiner는 Join한 StateStore를 저장할 형태를 의미한다.
+        KStream<String, ScoreWithPlayer> scoreWithPlayerKStream =
+                scoreEventKStream.join(
+                        playerKTable,
+                        ScoreWithPlayer::new,
+                        Joined.with(Serdes.String(), JsonSerdes.ScoreEvent(), JsonSerdes.Player())
+                );
+        scoreWithPlayerKStream.print(Printed.toSysOut());
+
+        //Joiner는 Join한 StateStore를 저장할 형태을 의미한다.
+        KStream<String, Enriched> enrichedKStream =
+             scoreWithPlayerKStream.join(
+                 productGlobalKTable,
+                 (key, value) -> String.valueOf(value.getScoreEvent().getProductId()),
+                 (readOnlyKey, scoreWithPlayer, product) -> new Enriched(scoreWithPlayer, product)
+             );
+
+        enrichedKStream.print(Printed.toSysOut());
 
         return builder.build();
     }

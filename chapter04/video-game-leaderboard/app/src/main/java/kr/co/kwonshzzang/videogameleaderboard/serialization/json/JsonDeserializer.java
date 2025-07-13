@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class JsonDeserializer<T> implements Deserializer<T> {
     private final Gson gson = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+           .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
     private Class<T> destinationClass;
