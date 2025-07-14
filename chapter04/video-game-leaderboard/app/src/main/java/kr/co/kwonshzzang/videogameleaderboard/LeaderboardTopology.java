@@ -7,6 +7,7 @@ import kr.co.kwonshzzang.videogameleaderboard.model.join.Enriched;
 import kr.co.kwonshzzang.videogameleaderboard.model.join.ScoreWithPlayer;
 import kr.co.kwonshzzang.videogameleaderboard.serialization.json.JsonSerdes;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
@@ -50,7 +51,7 @@ public class LeaderboardTopology {
                 );
         scoreWithPlayerKStream.print(Printed.toSysOut());
 
-        //Joiner는 Join한 StateStore를 저장할 형태을 의미한다.
+        // Joiner는 Join한 StateStore를 저장할 형태을 의미한다.
         KStream<String, Enriched> enrichedKStream =
              scoreWithPlayerKStream.join(
                  productGlobalKTable,
@@ -59,6 +60,20 @@ public class LeaderboardTopology {
              );
 
         enrichedKStream.print(Printed.toSysOut());
+
+        // Group the enriched product stream
+        KGroupedStream<String, Enriched> grouped =
+                enrichedKStream.groupBy(
+                    (key, value) -> String.valueOf(value.getProductId()),
+                        Grouped.with(Serdes.String(), JsonSerdes.Enriched())
+                );
+
+        KGroupedTable<String, Player> groupedTable =
+                playerKTable.groupBy(
+                        KeyValue::pair,
+                        Grouped.with(Serdes.String(), JsonSerdes.Player())
+                );
+
 
         return builder.build();
     }

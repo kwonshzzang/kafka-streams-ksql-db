@@ -3,6 +3,7 @@ package kr.co.kwonshzzang.videogameleaderboard.serialization.json;
 import kr.co.kwonshzzang.videogameleaderboard.model.Player;
 import kr.co.kwonshzzang.videogameleaderboard.model.Product;
 import kr.co.kwonshzzang.videogameleaderboard.model.ScoreEvent;
+import kr.co.kwonshzzang.videogameleaderboard.model.join.Enriched;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 
@@ -23,6 +24,12 @@ public class JsonSerdes {
     public static Serde<Product> Product() {
         JsonSerializer<Product> serializer = new JsonSerializer<>();
         JsonDeserializer<Product> deserializer = new JsonDeserializer<>(Product.class);
+        return Serdes.serdeFrom(serializer, deserializer);
+    }
+
+    public static Serde<Enriched> Enriched() {
+        JsonSerializer<Enriched> serializer = new JsonSerializer<>();
+        JsonDeserializer<Enriched> deserializer = new JsonDeserializer<>(Enriched.class);
         return Serdes.serdeFrom(serializer, deserializer);
     }
 }
