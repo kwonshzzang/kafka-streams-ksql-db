@@ -23,6 +23,12 @@ dependencies {
     // required for JSON serializer
     implementation 'com.google.code.gson:gson:2.10.1'
 
+    // required for interactive queries (server)
+    implementation 'io.javalin:javalin:6.7.0'
+
+    // required for interactive queries (client)
+    implementation 'com.squareup.okhttp3:okhttp:5.1.0'
+
     // required for Lombok Project
     compileOnly 'org.projectlombok:lombok:1.18.38'
     annotationProcessor 'org.projectlombok:lombok:1.18.38'

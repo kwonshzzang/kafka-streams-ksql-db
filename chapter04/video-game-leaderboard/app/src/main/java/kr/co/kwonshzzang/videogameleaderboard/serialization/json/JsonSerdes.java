@@ -1,5 +1,6 @@
 package kr.co.kwonshzzang.videogameleaderboard.serialization.json;
 
+import kr.co.kwonshzzang.videogameleaderboard.HighScores;
 import kr.co.kwonshzzang.videogameleaderboard.model.Player;
 import kr.co.kwonshzzang.videogameleaderboard.model.Product;
 import kr.co.kwonshzzang.videogameleaderboard.model.ScoreEvent;
@@ -30,6 +31,12 @@ public class JsonSerdes {
     public static Serde<Enriched> Enriched() {
         JsonSerializer<Enriched> serializer = new JsonSerializer<>();
         JsonDeserializer<Enriched> deserializer = new JsonDeserializer<>(Enriched.class);
+        return Serdes.serdeFrom(serializer, deserializer);
+    }
+
+    public static Serde<HighScores> HighScores() {
+        JsonSerializer<HighScores> serializer = new JsonSerializer<>();
+        JsonDeserializer<HighScores> deserializer = new JsonDeserializer<>(HighScores.class);
         return Serdes.serdeFrom(serializer, deserializer);
     }
 }
