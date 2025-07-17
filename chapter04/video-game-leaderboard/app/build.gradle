@@ -57,6 +57,26 @@ application {
     mainClass = 'kr.co.kwonshzzang.videogameleaderboard.App'
 }
 
+tasks.register("runFirst", JavaExec)  {
+    mainClass = application.mainClass
+    classpath sourceSets.main.runtimeClasspath
+    systemProperties = [
+        'host': 'localhost',
+        'port': '7000',
+        'stateDir': '/tmp/kafka-streams'
+    ]
+}
+
+tasks.register("runSecond", JavaExec)  {
+    mainClass = application.mainClass
+    classpath sourceSets.main.runtimeClasspath
+    systemProperties = [
+            'host': 'localhost',
+            'port': '7100',
+            'stateDir': '/tmp/kafka-streams2'
+    ]
+}
+
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
