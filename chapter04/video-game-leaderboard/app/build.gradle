@@ -25,6 +25,7 @@ dependencies {
 
     // required for interactive queries (server)
     implementation 'io.javalin:javalin:6.7.0'
+    implementation 'org.slf4j:slf4j-simple:2.0.17'
 
     // required for interactive queries (client)
     implementation 'com.squareup.okhttp3:okhttp:5.1.0'
@@ -62,7 +63,7 @@ tasks.register("runFirst", JavaExec)  {
     classpath sourceSets.main.runtimeClasspath
     systemProperties = [
         'host': 'localhost',
-        'port': '7000',
+        'port': '9000',
         'stateDir': '/tmp/kafka-streams'
     ]
 }
@@ -72,7 +73,7 @@ tasks.register("runSecond", JavaExec)  {
     classpath sourceSets.main.runtimeClasspath
     systemProperties = [
             'host': 'localhost',
-            'port': '7100',
+            'port': '9100',
             'stateDir': '/tmp/kafka-streams2'
     ]
 }

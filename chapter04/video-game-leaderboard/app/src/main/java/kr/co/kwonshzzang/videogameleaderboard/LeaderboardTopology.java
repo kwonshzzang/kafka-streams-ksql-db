@@ -88,6 +88,8 @@ public class LeaderboardTopology {
                             .withValueSerde(JsonSerdes.HighScores())
                 );
 
+        highScores.toStream().print(Printed.toSysOut());
+
         // KTable example: players aggregation
         KGroupedTable<String, Player> groupedTable =
                 playerKTable.groupBy(
@@ -100,7 +102,6 @@ public class LeaderboardTopology {
                 (key, value, aggregate) -> aggregate + 1L,
                 (key, value, aggregate) -> aggregate - 1L
         );
-
 
 
         highScores.toStream().to("high-scores");

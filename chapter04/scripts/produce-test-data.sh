@@ -1,3 +1,6 @@
+# log into the broker, which is where the kafka console scripts live
+# docker-compose exec kafka bash
+
 docker-compose exec kafka bash -c "
   kafka-console-producer \
   --bootstrap-server kafka:9092 \

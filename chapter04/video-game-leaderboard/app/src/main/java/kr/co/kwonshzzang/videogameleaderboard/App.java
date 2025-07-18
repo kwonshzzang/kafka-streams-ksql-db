@@ -3,6 +3,7 @@
  */
 package kr.co.kwonshzzang.videogameleaderboard;
 
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
@@ -27,6 +28,8 @@ public class App {
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "dev");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Long().getClass());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.Long().getClass());
         props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, endpoint);
         props.put(StreamsConfig.STATE_DIR_CONFIG, stateDir);
 
