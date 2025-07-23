@@ -1,8 +1,8 @@
-$ mkdir patient-monitoring && cd patient-monitoring
+$ mkdir cnc-monitoring && cd cnc-monitoring
 
 $ gradle init \
   --type java-application \
   --dsl groovy \
   --test-framework junit-jupiter \
-  --project-name patient-monitoring \
-  --package kr.co.kwonshzzang.patientmonitoring
+  --project-name cnc-monitoring \
+  --package com.in2wise.cncmonitoring
