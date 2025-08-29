@@ -7,4 +7,11 @@ public class Pulse implements  Vital {
     public String getTimestamp() {
         return  timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "Pulse{" +
+                "timestamp='" + timestamp + '\'' +
+                '}';
+    }
 }
