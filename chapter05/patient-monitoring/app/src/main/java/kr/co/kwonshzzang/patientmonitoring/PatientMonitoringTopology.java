@@ -6,11 +6,11 @@ import kr.co.kwonshzzang.patientmonitoring.serialization.json.JsonSerdes;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Printed;
+import org.apache.kafka.streams.kstream.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Duration;
 
 
 public class PatientMonitoringTopology {
@@ -44,6 +44,35 @@ public class PatientMonitoringTopology {
                 builder.stream("body-temp-events", bodyTempConsumerOptions);
 
         tempEvents.print(Printed.toSysOut());
+
+        // turn pulse into a rate (bpm)
+        TimeWindows tumblingWindows = TimeWindows.ofSizeAndGrace(Duration.ofSeconds(60), Duration.ofSeconds(5));
+
+        /**
+         * Examples of other windows(not needed for the tutorial) are commented out below
+         *
+         *  TimeWindows hoppingWindows = TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(5)).advanceBy(Duration.ofSeconds(4));
+         *  SessionWindows sessionWindows = SessionWindows.ofInactivityGapWithNoGrace(Duration.ofSeconds(10));
+         *  JoinWindows joinWindows = JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofSeconds(5));
+         *  SlidingWindows slidingWindows = SlidingWindows.ofTimeDifferenceAndGrace(Duration.ofSeconds(5), Duration.ofSeconds(0));
+         */
+
+        KTable<Windowed<String>, Long> pulseCounts =
+                pulseEvents
+                    // 2
+                    .groupByKey()
+                    // 3.1 - windowed aggregation
+                    .windowedBy(tumblingWindows)
+                    // 3.2 - windowed aggregation
+                    .count(Materialized.as("pulse-counts"))
+                    // 4
+                    .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded().shutDownWhenFull()));
+
+        pulseCounts
+                .toStream()
+                .print(Printed.<Windowed<String>, Long>toSysOut().withLabel("pulse-counts"));
+
+
 
 
         return builder.build();
